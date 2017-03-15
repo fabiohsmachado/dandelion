@@ -9,3 +9,4 @@ paper
 Linear Coding and Decoding for k-Trees]].
 
 """
+__version__ = '0.1'
