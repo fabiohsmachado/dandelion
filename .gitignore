@@ -1,0 +1,7 @@
+#Emacs' files
+\.#*
+
+#Python cache files
+__pycache__/
+*.py[cod]
+.cache/
