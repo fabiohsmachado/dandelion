@@ -18,9 +18,16 @@ called Generalized Dandelion Code.
 It is an implemetentation of the algorithm describe in Camintini's et. al. paper
 [[https://www.researchgate.net/publication/225969891_Bijective_Linear_Time_Coding_and_Decoding_for_k-Trees][Bijective Linear Coding and Decoding for k-Trees]].
 
+* Tasks
+** DONE Project skeleton for k-Trees Sampling
+   CLOSED: [2017-03-15 qua 20:15]
+** DONE Define the Dandelion Code class
+   CLOSED: [2017-03-15 qua 21:28]
+** DONE Validate the Dandelion Code 
+   CLOSED: [2017-03-15 qua 21:42]
+
 * Modules
 ** dandelion
-#+Name: dandelion
 #+BEGIN_SRC python :tangle dandelion/dandelion.py
   """Defines the Dandelion class"""
 
@@ -29,12 +36,34 @@ It is an implemetentation of the algorithm describe in Camintini's et. al. paper
 
       # The code itself. Each i-th element of the array is a set containing the
       # parent of the i-th node and its edge label in the characteristic tree.
-      code = []
+      code = [];
+
+      #The number of variables in the k-Tree
+      N = None;
+
+      def validateCode(code):
+          """Check if the code is well formed"""
+
+          #Assert types
+          assert isinstance(code, list);
+          for t in code:
+              assert isinstance(t, tuple);
+
+          #Assert number of elements according to N
+          assert len(code) == self.N - 2
+
+          return True;
 
       def __init__(self, code=None):
           """Initializes the code. An already existing code can be passed too."""
           if code is not None:
+              try:
+                  self.validateCode(code);
+              except AssertionError:
+                  return "Invalid code";
+
               self.code = code;
+              self.N = len(code) + 2;
 
   def main():
       """Parses command line arguments"""
@@ -59,4 +88,3 @@ It is an implemetentation of the algorithm describe in Camintini's et. al. paper
   """
   __version__ = '0.1'
 #+END_SRC
-
