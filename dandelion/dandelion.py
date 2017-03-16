@@ -10,7 +10,7 @@ class Dandelion:
     #The number of variables in the k-Tree
     N = None;
 
-    def validateCode(code):
+    def validateCode(self, code):
         """Check if the code is well formed"""
 
         #Assert types
@@ -18,19 +18,16 @@ class Dandelion:
         for t in code:
             assert isinstance(t, tuple);
 
-        #Assert number of elements according to N
-        assert len(code) == self.N - 2
+        #If N exists assert number of elements according to N
+        if self.N is not None:
+            assert len(code) == self.N - 2
 
         return True;
 
     def __init__(self, code=None):
         """Initializes the code. An already existing code can be passed too."""
         if code is not None:
-            try:
-                self.validateCode(code);
-            except AssertionError:
-                return "Invalid code";
-
+            self.validateCode(code)
             self.code = code;
             self.N = len(code) + 2;
 
