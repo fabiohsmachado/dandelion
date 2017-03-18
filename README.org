@@ -13,7 +13,6 @@
 #+PROPERTY: header-args:python :session *Python*
 #+PROPERTY: header-args :results output
 
-* Introduction
 This package presents a method for coding and decoding k-Trees from strings
 called Generalized Dandelion Codes. It is an implementation of the algorithm
 describe in Camintini's et. al. paper [[https://www.researchgate.net/publication/225969891_Bijective_Linear_Time_Coding_and_Decoding_for_k-Trees][Bijective Linear Coding and Decoding for
@@ -21,8 +20,7 @@ k-Trees]].
 
 This documentation assumes familiarity with the mentioned paper.
 
-* Code and kTree Structures
- For these examples we'll be considering a kTree of 11 variables and k=3.
+For the examples here we'll be considering a kTree of \(N = 11\) variables and \(k = 3\).
 #+BEGIN_SRC python
   import numpy as np
   import networkx as nx
@@ -33,8 +31,7 @@ This documentation assumes familiarity with the mentioned paper.
   k = 3; #Width of the graph
 #+END_SRC
 
-#+RESULTS:
-
+* Code and kTree Structures
   The kTree is represented using [[https://networkx.github.io/][NetworkX's]] Graph class.
 #+BEGIN_SRC python
   kTree = nx.Graph();
@@ -54,7 +51,7 @@ This documentation assumes familiarity with the mentioned paper.
 
 The Dandelion code is an Array of Tuples. The i-th Tuple has the information
 about the parent of the i-th node and it's edge's label on the characteristic
-tree. The \epsilon edge label in represented as the value $-1$.
+tree. The \epsilon edge label in represented as the value \(-1\).
 #+BEGIN_SRC python
   validCode = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)]; #OK
   invalidCode = [(0, -1), (0, 2), 4, [1, 3]] #NOK, has an int and an array instead of Tuples in its elements
@@ -62,9 +59,9 @@ tree. The \epsilon edge label in represented as the value $-1$.
 
 #+RESULTS:
 
-To code or decode a k-Tree an instance of the Dandelion class must be created. When
-instantiating the class the number of variables $N$ and the width of the $k$ tree
-must be provided.
+To code or decode a k-Tree an instance of the Dandelion class must be created.
+When instantiating the class the number of variables \(N\) and the width of the
+\(k\) tree must be provided.
 
 In case of coding a kTree must be provided. Either at construction time or later
 by setting the "kTree" attribute to a valid kTree. It validates if the kTree
