@@ -3,13 +3,14 @@
 class Dandelion:
     """The Dandelion code"""
 
-    def __init__(self, initialCode=None):
-        """Initializes the code. An already existing code can be passed too."""
+    def __init__(self, N, k, initialCode=None):
+        """Initializes the code."""
 
+        self.N = N;
+        self.k = k;
         self._code = None;
         if initialCode is not None:
             self.code = initialCode;
-            self.N = len(self.code) + 2;
 
     # The code itself. Each i-th element of the array is a tuple containing the
     # parent of the i-th node and its edge label in the characteristic tree.
@@ -22,20 +23,19 @@ class Dandelion:
         self.validateCode(value);
         self._code = value;
 
-    #The number of variables in the k-Tree
-    N = None;
-
     def validateCode(self, code):
-        """Check if the code is well formed"""
+        """Check if the code is well formed.
 
-        #Assert types
+        Raises AssertionError if not.
+        """
+
+        #Check types
         assert isinstance(code, list);
         for t in code:
             assert isinstance(t, tuple);
 
-        #If N exists assert number of elements according to N
-        if self.N is not None:
-            assert len(code) == self.N - 2
+        #Assert number of elements according to N and k
+        assert len(code) == self.N - self.k - 2
 
         return True;
 
