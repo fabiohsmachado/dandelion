@@ -5,7 +5,7 @@
 #+TITLE: Dandelion
 #+DATE: <2017-03-15 qua>
 #+AUTHOR: Fabio Machado
-#+EMAIL: fabio@fabio-Vostro-5470
+#+EMAIL: fabiohsmachado@gmail.com
 #+LANGUAGE: en
 #+SELECT_TAGS: export
 #+CREATOR: Emacs 24.5.1 (Org mode 9.0.3)
@@ -13,20 +13,68 @@
 
 * Introduction
 This package presents a method for coding and decoding k-Trees from strings
-called Generalized Dandelion Code.
+called Generalized Dandelion Codes. It is an implemetentation of the algorithm
+describe in Camintini's et. al. paper [[https://www.researchgate.net/publication/225969891_Bijective_Linear_Time_Coding_and_Decoding_for_k-Trees][Bijective Linear Coding and Decoding for
+k-Trees]].
 
-It is an implemetentation of the algorithm describe in Camintini's et. al. paper
-[[https://www.researchgate.net/publication/225969891_Bijective_Linear_Time_Coding_and_Decoding_for_k-Trees][Bijective Linear Coding and Decoding for k-Trees]].
+This documentation assumes familiarity with the mentioned paper.
+
+* Code Structure
+Here the Dandelion code is an Array of Tuples. The i-th Tuple has the
+information about the parent of the i-th node and it's edge's label on the
+characteristic tree. The \epsilon edge label in represented as the value $-1$.
+
+#+BEGIN_SRC python :session
+validCode = [(0,-1), (0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)]; #OK
+invalidCode = [(0, -1), (0, 2), 4, [1, 3]] #NOK, has an int and an array instead of Tuples in its elements
+#+END_SRC
+
+#+RESULTS:
+
+* Coding and Decoding
+To code and decode a k-Tree an instance of the Dandelion class must be created.
+In case of decoding a code must be provided at construction time or later by
+setting the "code" attribute to a valid code. If a wrong code is provided an
+Exception is raised.
+
+#+BEGIN_SRC python :session :results output
+  from dandelion.main import Dandelion
+
+  dandelionCode = Dandelion(validCode); #OK, code provided at construction
+  dandelionCode = Dandelion(); #OK, empty structure
+  try:
+      dandelionCode.code = invalidCode; #NOK, raises AssertionError exception
+  except AssertionError as e:
+      print("Error");
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> >>> ... ... ... ... Error
+
+** Decoding a k-Tree
 
 * Tasks
-** DONE Project skeleton for k-Trees Sampling
+** DONE Project skeleton
    CLOSED: [2017-03-15 qua 20:15]
-** DONE Define the Dandelion Code class
+** DONE Define the Dandelion class
    CLOSED: [2017-03-15 qua 21:28]
 ** DONE Validate the Dandelion Code 
    CLOSED: [2017-03-15 qua 21:42]
-** TODO Tests [0/2] 
-*** TODO Contructor [1/3]
+** DONE Turn code into a property and use the validation when setting a new code
+   CLOSED: [2017-03-18 sáb 00:49]
+** TODO Add k as a property 
+** TODO Proper set N (current has wrong formula) 
+** TODO Create de Decode Method [0/5]
+*** TODO Step 0
+*** TODO Step 1
+*** TODO Step 2
+*** TODO Step 3
+*** TODO Step 4
+
+** TODO Tests [1/1] 
+*** DONE Validation [3/3]
+    CLOSED: [2017-03-16 qui 00:03]
     - [X] Good code
-    - [ ] Bad code: wrong format
-    - [ ] Bad code: wrong size
+    - [X] Bad code: wrong format
+    - [X] Bad code: wrong length
