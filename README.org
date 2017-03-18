@@ -20,7 +20,7 @@ k-Trees]].
 
 This documentation assumes familiarity with the mentioned paper.
 
-For the examples here we'll be considering a kTree of \(N = 11\) variables and \(k = 3\).
+For the examples here we'll be considering a kTree of $$N = 11$$ variables and $$k = 3$$.
 #+BEGIN_SRC python
   import numpy as np
   import networkx as nx
@@ -51,7 +51,7 @@ For the examples here we'll be considering a kTree of \(N = 11\) variables and \
 
 The Dandelion code is an Array of Tuples. The i-th Tuple has the information
 about the parent of the i-th node and it's edge's label on the characteristic
-tree. The \epsilon edge label in represented as the value \(-1\).
+tree. The \epsilon edge label in represented as the value $$-1$$.
 #+BEGIN_SRC python
   validCode = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)]; #OK
   invalidCode = [(0, -1), (0, 2), 4, [1, 3]] #NOK, has an int and an array instead of Tuples in its elements
@@ -60,8 +60,8 @@ tree. The \epsilon edge label in represented as the value \(-1\).
 #+RESULTS:
 
 To code or decode a k-Tree an instance of the Dandelion class must be created.
-When instantiating the class the number of variables \(N\) and the width of the
-\(k\) tree must be provided.
+When instantiating the class the number of variables $$N$$ and the width of the
+$$k$$ tree must be provided.
 
 In case of coding a kTree must be provided. Either at construction time or later
 by setting the "kTree" attribute to a valid kTree. It validates if the kTree
@@ -99,18 +99,15 @@ wrong length according to N or k) is provided, an Exception is raised.
 * Coding and Decoding
 ** Decoding a k-Tree
 
-* Tasks
-** TODO Create the Code method
-** TODO Create the Decode Method [0/5]
-*** TODO Step 0
-*** TODO Step 1
-*** TODO Step 2
-*** TODO Step 3
-*** TODO Step 4
+** Coding a k-Tree
 
+* Tasks
+** TODO Create the Code Method
+** TODO Create the Decode Method
 ** TODO Tests [1/1] 
-*** DONE Validation [3/3]
+*** DONE Validation [4/4]
     CLOSED: [2017-03-16 qui 00:03]
     - [X] Good code
     - [X] Bad code: wrong format
     - [X] Bad code: wrong length
+    - [X] kTrees
