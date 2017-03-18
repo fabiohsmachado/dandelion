@@ -5,3 +5,4 @@
 __pycache__/
 *.py[cod]
 .cache/
+*.org_archive
