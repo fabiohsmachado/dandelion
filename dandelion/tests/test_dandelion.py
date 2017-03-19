@@ -9,7 +9,7 @@ class TestDandelion():
 
     N, k = 11, 3;
     good_code = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)];
-    bad_code = [(0, -1), (0, 2), 4, [1, 3]]
+    bad_code = [(0, -1), (0, 2), 4, [1, 3]];
 
     kTree = nx.Graph();
     kTree.add_nodes_from([i for i in np.arange(N)]);

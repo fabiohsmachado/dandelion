@@ -102,15 +102,10 @@ wrong length according to N or k) is provided, an Exception is raised.
 * Coding and Decoding
 ** Decoding a k-Tree
 
-* Tasks
+* Todo
 ** TODO Create the Code method
 ** TODO Create the Decode Method [0/5]
-*** TODO Step 0
-*** TODO Step 1
-*** TODO Step 2
-*** TODO Step 3
-*** TODO Step 4
-
+** TODO [#C] Change code from list no np.Array 
 ** TODO Tests [1/1] 
 *** DONE Validation [3/3]
     CLOSED: [2017-03-16 qui 00:03]
