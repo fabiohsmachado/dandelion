@@ -12,7 +12,6 @@ class TestDandelion():
     bad_code = [(0, -1), (0, 2), 4, [1, 3]];
 
     kTree = nx.Graph();
-    kTree.add_nodes_from([i for i in np.arange(N)]);
     kTree.add_edges_from([(1,2),(1,8),(1,5),(1,7),
                           (2,5),(2,6),(2,8),(2,3),(2,11),(2,9),(2,10),
                           (3,8),(3,5),(3,9),(3,4),(3,10),(3,11),
@@ -59,3 +58,11 @@ class TestDandelion():
         DCode = Dandelion(11, 3);
         with pytest.raises(AssertionError):
             DCode.kTree = [11, 5] #Not an instance of nx.Graph;
+
+    def test_dandelion_tranforms_kTree_into_renyiKTree(self):
+        renyiKTree = nx.Graph();
+        renyiKTree.add_edges_from(self.kTree.edges());
+        nx.relabel_nodes(renyiKTree, {2:9, 3:10, 9:11, 10:3, 11:2})
+
+        DCode = Dandelion(11, 3, kTree = self.kTree);
+        assert DCode._relabelKTree(self.kTree).edges() == renyiKTree.edges();

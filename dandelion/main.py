@@ -57,11 +57,67 @@ class Dandelion:
 
         DOES NOT validates the kTree structure, instead does minimum validation
         to check if it an instance of networkx's Graph.
-
         """
 
         assert isinstance(kTree, nx.Graph)
         return True;
+
+    def codeKTree(self):
+        """Code a kTree into a Dandelion code.
+
+        Needs to have the kTree attribute set.
+        Fills the code attribute and rewrites it if there was any.
+        """
+        if self.kTree is None:
+            raise Error("Need to specify a k-Tree first");
+
+        renyiKTree = _relabelKTree(self.kTree);
+
+        return mapping;
+
+    def _relabelKTree(self, kTree):
+        """Transforms the k-Tree into a Renyi k-Tree.
+
+        Creates a new graph from the input kTree.
+
+        Parameters
+        kTree : networkx.Graph
+            The kTree
+
+        Returns
+        renyiKTree : networkx Graph
+            The relabeled kTree.
+        """
+
+        renyiKTree = nx.Graph();
+        renyiKTree.add_edges_from(kTree.edges())
+
+        #l_m is the maximum node of degree k
+        l_m = max([k for k, v in kTree.degree().items() if v == self.k]);
+        #Q are the nodes adjacent to l_m
+        Q = sorted(list(kTree[l_m].keys()));
+
+
+        ##Step 1:
+        R = [self.N - self.k + i + 1 for i in range(self.k)] #New root
+        mapping = {k: v for k, v in zip(Q, R)}
+        ##Step 2 is not needed
+        ##Step 3:
+        loopClosers = [i for i in R if i not in Q];
+        for lc in loopClosers:
+            try:
+                newLabel = lc;
+                while True:
+                    #Find dict keys by value
+                    newLabel = list(mapping.keys())[list(mapping.values()).index(newLabel)]
+            except ValueError:
+                pass;
+            mapping.update({lc: newLabel});
+
+        ##Actual relabel
+        nx.relabel_nodes(renyiKTree, mapping);
+
+        return renyiKTree;
 
 def main():
     """Parses command line arguments"""
