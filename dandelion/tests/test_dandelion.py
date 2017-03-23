@@ -2,12 +2,14 @@ import pytest
 
 import networkx as nx
 import numpy as np
+
 from ..main import Dandelion
 
 class TestDandelion():
     """Tests for the Dandelion code"""
 
-    N, k = 11, 3;
+    N = 11
+    k = 3;
     good_code = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)];
     bad_code = [(0, -1), (0, 2), 4, [1, 3]];
 
@@ -21,6 +23,10 @@ class TestDandelion():
                           (7,8),
                           (8,9),
                           (9,10),(9,11)])
+
+    renyiKTree = nx.Graph();
+    renyiKTree.add_edges_from(kTree.edges());
+    nx.relabel_nodes(renyiKTree, {2:9, 3:10, 9:11, 10:3, 11:2})
 
     def test_dandelion_constructs_good_code(self):
         assert isinstance(Dandelion(11, 3, self.good_code), Dandelion);
@@ -60,9 +66,6 @@ class TestDandelion():
             DCode.kTree = [11, 5] #Not an instance of nx.Graph;
 
     def test_dandelion_tranforms_kTree_into_renyiKTree(self):
-        renyiKTree = nx.Graph();
-        renyiKTree.add_edges_from(self.kTree.edges());
-        nx.relabel_nodes(renyiKTree, {2:9, 3:10, 9:11, 10:3, 11:2})
-
         DCode = Dandelion(11, 3, kTree = self.kTree);
-        assert DCode._relabelKTree(self.kTree).edges() == renyiKTree.edges();
+        Q, RTree = DCode._relabelKTree(self.kTree);
+        assert RTree.edges() == self.renyiKTree.edges() and Q == [2, 3, 9];

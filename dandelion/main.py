@@ -66,12 +66,12 @@ class Dandelion:
         """Code a kTree into a Dandelion code.
 
         Needs to have the kTree attribute set.
-        Fills the code attribute and rewrites it if there was any.
+        Fills the code attribute (rewrites it if there was any).
         """
         if self.kTree is None:
             raise Error("Need to specify a k-Tree first");
 
-        renyiKTree = _relabelKTree(self.kTree);
+        Q, renyiKTree = _relabelKTree(self.kTree);
 
         return mapping;
 
@@ -85,6 +85,8 @@ class Dandelion:
             The kTree
 
         Returns
+        Q : list
+            A sorted list of nodes with degree = k
         renyiKTree : networkx Graph
             The relabeled kTree.
         """
@@ -96,7 +98,6 @@ class Dandelion:
         l_m = max([k for k, v in kTree.degree().items() if v == self.k]);
         #Q are the nodes adjacent to l_m
         Q = sorted(list(kTree[l_m].keys()));
-
 
         ##Step 1:
         R = [self.N - self.k + i + 1 for i in range(self.k)] #New root
@@ -117,7 +118,7 @@ class Dandelion:
         ##Actual relabel
         nx.relabel_nodes(renyiKTree, mapping);
 
-        return renyiKTree;
+        return Q, renyiKTree;
 
 def main():
     """Parses command line arguments"""
