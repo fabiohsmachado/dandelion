@@ -4,20 +4,16 @@ import networkx as nx;
 class Dandelion:
     """The Dandelion code"""
 
-    def __init__(self, N, k, code=None, kTree=None):
+    def __init__(self, N, k, code = None, kTree = None):
         """Initializes the code."""
 
         self.N = N;
         self.k = k;
-        self._code = None;
-        self._kTree = None;
         if code is not None:
             self.code = code;
         if kTree is not None:
             self.kTree = kTree;
 
-    # The code itself. Each i-th element of the array is a tuple containing the
-    # parent of the i-th node and its edge label in the characteristic tree.
     @property
     def code(self):
         return self._code;
@@ -71,9 +67,58 @@ class Dandelion:
         if self.kTree is None:
             raise Error("Need to specify a k-Tree first");
 
+        #Turn the kTree into a Renyi kTree:
         Q, renyiKTree = _relabelKTree(self.kTree);
 
-        return mapping;
+        #Obtain the characteristic tree from the Renyi kTree:
+        ## Create Node List
+        T = _pruneRk(renyiKTree);
+        ## Create Edge List
+        _addEdges(T);
+
+        #Obtain the Dandelion Code from the characteristic tree:
+        #TODO
+
+    def _addEdges(self, T):
+        #TODO
+        return True;
+
+    def _pruneRk(self, Rk):
+        """Creates a new characteristic tree T from a Renyi kTree.
+
+        Returns a new Graph, with just the nodes for T but no edges. All nodes
+        except for the root in the Renyi kTree are marked as checked in the
+        process.
+
+        Parameters:
+            Rk: nx.Graph
+                The Renyi kTree
+
+        Returns:
+            T: nx.Graph
+                The characteristic tree with only the node list.
+
+        """
+        T = nx.Graph();
+
+        nx.set_node_attributes(Rk, 'checked', False);
+        adj = Rk.adjacency_list();
+        deg = Rk.degree();
+
+        def remove(node):
+            T.add_node(node);
+            Rk.node[node]['checked'] = True;
+            for y in adj[node-1]:
+                if not Rk.node[y]['checked']:
+                    deg[y] -= 1;
+
+        for v, _ in enumerate(range(self.N - self.k), 1):
+            if deg[v] == self.k:
+                remove(v);
+                for u in adj[v-1]:
+                    if u < v and not Rk.node[u]['checked'] and deg[u] == self.k:
+                        remove(u);
+        return T;
 
     def _relabelKTree(self, kTree):
         """Transforms the k-Tree into a Renyi k-Tree.
@@ -99,23 +144,20 @@ class Dandelion:
         #Q are the nodes adjacent to l_m
         Q = sorted(list(kTree[l_m].keys()));
 
-        ##Step 1:
+        #Step 1:
         R = [self.N - self.k + i + 1 for i in range(self.k)] #New root
         mapping = {k: v for k, v in zip(Q, R)}
-        ##Step 2 is not needed
-        ##Step 3:
+        #Step 2 is not needed
+        #Step 3:
         loopClosers = [i for i in R if i not in Q];
         for lc in loopClosers:
-            try:
-                newLabel = lc;
-                while True:
-                    #Find dict keys by value
-                    newLabel = list(mapping.keys())[list(mapping.values()).index(newLabel)]
-            except ValueError:
-                pass;
+            newLabel = lc;
+            while newLabel in mapping.values():
+                #Find dict keys by value
+                newLabel = list(mapping.keys())[list(mapping.values()).index(newLabel)]
             mapping.update({lc: newLabel});
 
-        ##Actual relabel
+        #Actual relabel
         nx.relabel_nodes(renyiKTree, mapping);
 
         return Q, renyiKTree;
