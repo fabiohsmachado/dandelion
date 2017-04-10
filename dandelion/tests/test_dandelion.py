@@ -79,6 +79,10 @@ class TestDandelion():
         DCode = Dandelion(11, 3);
         assert DCode.code == None;
 
+    def test_request_empty_kTree_returns_none(self):
+        DCode = Dandelion(11, 3);
+        assert DCode.kTree == None;
+
     def test_dandelion_constructs_from_kTree(self):
         DCode = Dandelion(11, 3, kTree=self.kTree);
         assert DCode.kTree == self.kTree;

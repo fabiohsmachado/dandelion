@@ -9,6 +9,8 @@ class Dandelion:
 
         self.N = N;
         self.k = k;
+        self._code = None;
+        self._kTree = None;
         if code is not None:
             self.code = code;
         if kTree is not None:
@@ -77,10 +79,8 @@ class Dandelion:
         _addEdges(T);
 
         #Obtain the Dandelion Code from the characteristic tree:
-        #TODO
 
     def _addEdges(self, T):
-        #TODO
         return True;
 
     def _pruneRk(self, Rk):
