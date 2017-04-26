@@ -27,7 +27,7 @@ class TestDandelion():
 
     renyiKTree = nx.Graph();
     renyiKTree.add_edges_from(kTree.edges());
-    nx.relabel_nodes(renyiKTree, {2:9, 3:10, 9:11, 10:3, 11:2})
+    renyiKTree = nx.relabel_nodes(renyiKTree, {2:9, 3:10, 9:11, 10:3, 11:2})
 
     #Example of Fig. 2
     Rk = nx.Graph();
@@ -42,14 +42,26 @@ class TestDandelion():
                        (9,11),(9,10),
                        (10,11)])
 
-    T = nx.Graph();
-    T.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
-    T.add_edges_from([#(0, 3, {'label':-1}), (0, 8, {'label':-1}), (0, 2, {'label':-1}),
-                          (8, 5, {'label':3}), (8, 6, {'label':2}),
-                          (2, 4, {'label':1}),
-                          (5, 1, {'label':3}),
-                          (1, 7, {'label':3})]);
+    T = nx.DiGraph();
+    T.add_node(1, Kv = [5, 8, 9]);
+    T.add_node(2, Kv = [9, 10, 11]);
+    T.add_node(3, Kv = [9, 10, 11]);
+    T.add_node(4, Kv = [2, 10, 11]);
+    T.add_node(5, Kv = [8, 9, 10]);
+    T.add_node(6, Kv = [8, 9, 11]);
+    T.add_node(7, Kv = [1, 5, 8]);
+    T.add_node(8, Kv = [9, 10, 11]);
 
+    T.add_edge(3, 0, label = -1);
+    T.add_edge(8, 0, label = -1);
+    T.add_edge(2, 0, label = -1);
+    T.add_edge(7, 1, label = 3);
+    T.add_edge(4, 2, label = 1);
+    T.add_edge(1, 5, label = 3);
+    T.add_edge(5, 8, label = 3);
+    T.add_edge(6, 8, label = 2);
+
+    pruneOrder = [3, 4, 2, 6, 7, 1, 5, 8];
 
     def test_dandelion_constructs_good_code(self):
         assert isinstance(Dandelion(11, 3, self.good_code), Dandelion);
@@ -97,13 +109,37 @@ class TestDandelion():
         Q, RTree = DCode._relabelKTree(self.kTree);
         assert RTree.edges() == self.renyiKTree.edges() and Q == [2, 3, 9];
 
-    def test_dandelion_creates_node_list_for_the_characteristc_tree(self):
-        #Asserts T has the same node list
-        DCode = Dandelion(11, 3);
-        T = DCode._pruneRk(self.Rk);
-        assert T.nodes() == self.T.nodes();
+    def test_dandelion_stores_old_labels_of_kTrees(self):
+        DCode = Dandelion(11, 3, kTree = self.kTree);
+        Q, RTree = DCode._relabelKTree(self.kTree);
+        assert nx.get_node_attributes(RTree, 'old_label') == {1: 1, 2: 11, 3: 10,
+                                                              4: 4, 5: 5, 6: 6,
+                                                              7: 7, 8: 8, 9: 2,
+                                                              10: 3, 11: 9};
 
-        #Asserts all nodes in Rk, except for the Root were checked
-        checkedAttr =  {i: True for i in T.nodes()}
-        checkedAttr.update({9: False, 10: False, 11: False});
-        assert nx.get_node_attributes(self.Rk, 'checked') == checkedAttr;
+    def test_dandelion_add_nodes_graph_nodes(self):
+        #Asserts T has the same node list as the decoded characteristc tree
+        DCode = Dandelion(11, 3);
+        T = nx.Graph()
+        DCode._addNodes(self.Rk, T);
+        assert T.node == self.T.node;
+
+    def test_dandelion_add_nodes_prune_order(self):
+        #Asserts the prune order defined in _addNodes is correct
+        DCode = Dandelion(11, 3);
+        T = nx.DiGraph()
+        pruneOrder = DCode._addNodes(self.Rk, T);
+        assert pruneOrder == self.pruneOrder;
+
+    def test_dandelion_add_edges(self):
+        #Asserts T has the same edge list as the decoded characteristc tree
+        DCode = Dandelion(11, 3);
+        T = nx.DiGraph()
+        pruneOrder = DCode._addNodes(self.Rk, T);
+        DCode._addEdges(T, pruneOrder);
+        assert T.edge == self.T.edge;
+
+    def test_dandelion_generalized_code(self):
+        DCode = Dandelion(11, 3);
+        code = DCode._generalizedCode(self.T, 0, 1);
+        assert code == self.good_code;
