@@ -10,6 +10,7 @@
 #+SELECT_TAGS: export
 #+CREATOR: Emacs 24.5.1 (Org mode 9.0.3)
 #+EXCLUDE_TAGS: noexport
+#+PROPERTY: header-args:python :exports both
 
 This package presents a method for coding and decoding k-Trees from strings
 called Generalized Dandelion Codes. It is an implementation of the algorithm
