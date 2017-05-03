@@ -77,22 +77,23 @@ class Dandelion:
             raise Error("Need to specify a k-Tree first");
 
         #Turn the kTree into a Renyi kTree:
-        self.Q, self.Rk = _relabelKTree(self.kTree);
+        self.Q, self.Rk = self._relabelKTree(self.kTree);
 
         #Obtain the characteristic tree T from the Renyi kTree:
-        self.T = pruneRk();
+        self.T = self._pruneRk();
 
         #Obtain the Dandelion Code from the characteristic tree:
         ##Setup parameters
         r = 0;
 
-        q_bar = min([n for n in T if n not in Q]);
-        x = self.T.node[q_bar]['old_label'];
+        nodesInT = [i for i in self.T][1:];
+        q_bar = min([n for n in nodesInT if n not in self.Q]);
+        x = self.Rk.node[q_bar]['old_label'];
 
         ##Generate the code
-        self.code = _generalizedCode(self.T, r, x);
+        self.code = self._generalizedCode(self.T, r, x);
 
-        return self.code;
+        return self.Q, self.code;
 
     def _generalizedCode(self, T, r, x):
         """Generates a dandelion code from a given characteristic tree.
@@ -120,7 +121,7 @@ class Dandelion:
 
             This function removes the original edge of each node with its
             parent and add a new edge with one node and the other node's
-            parent. It preserver the original 'label' property.
+            parent. It preserves the original label.
             """
             labels = nx.get_edge_attributes(T, 'label');
             parent_source = T.successors(source)[0];
@@ -159,8 +160,8 @@ class Dandelion:
                 The new characteristic tree
         """
         T = nx.DiGraph();
-        pruneOrder = _addNodes(self.Rk, T);
-        _addEdges(T, pruneOrder);
+        pruneOrder = self._addNodes(self.Rk, T);
+        self._addEdges(T, pruneOrder);
         return T;
 
     def _addEdges(self, T, pruneOrder):
@@ -299,5 +300,6 @@ class Dandelion:
             mapping.update({lc: newLabel});
 
         #Actual relabel
-        nx.set_node_attributes(renyiKTree, 'old_label', {n: n for n in renyiKTree.nodes()}) #Save old node labels
+        nx.set_node_attributes(renyiKTree, 'old_label', {n: n for n in
+                                                         renyiKTree.nodes()}) #Save old node labels
         return Q, nx.relabel_nodes(renyiKTree, mapping); #Update node labels

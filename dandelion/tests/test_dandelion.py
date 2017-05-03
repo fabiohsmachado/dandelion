@@ -10,7 +10,6 @@ class TestDandelion():
 
     N = 11
     k = 3;
-    good_code = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)];
     bad_code = [(0, -1), (0, 2), 4, [1, 3]];
 
     #Example Fig 1
@@ -24,6 +23,8 @@ class TestDandelion():
                           (7,8),
                           (8,9),
                           (9,10),(9,11)])
+    good_code = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)];
+    Q = [2, 3, 9];
 
     renyiKTree = nx.Graph();
     renyiKTree.add_edges_from(kTree.edges());
@@ -51,7 +52,6 @@ class TestDandelion():
     T.add_node(6, Kv = [8, 9, 11]);
     T.add_node(7, Kv = [1, 5, 8]);
     T.add_node(8, Kv = [9, 10, 11]);
-
     T.add_edge(3, 0, label = -1);
     T.add_edge(8, 0, label = -1);
     T.add_edge(2, 0, label = -1);
@@ -60,8 +60,26 @@ class TestDandelion():
     T.add_edge(1, 5, label = 3);
     T.add_edge(5, 8, label = 3);
     T.add_edge(6, 8, label = 2);
-
     pruneOrder = [3, 4, 2, 6, 7, 1, 5, 8];
+
+    T_2 = nx.DiGraph();
+    T_2.add_nodes_from(range(15));
+    T_2.add_edge(14, 0, label = -1);
+    T_2.add_edge(3, 0, label = -1);
+    T_2.add_edge(2, 3, label = 2);
+    T_2.add_edge(13, 3, label = 3);
+    T_2.add_edge(5, 2, label = 1);
+    T_2.add_edge(10, 5, label = 4);
+    T_2.add_edge(6, 10, label = 3);
+    T_2.add_edge(8, 10, label = 3);
+    T_2.add_edge(4, 6, label = 3);
+    T_2.add_edge(9, 6, label = 4);
+    T_2.add_edge(12, 8, label = 1);
+    T_2.add_edge(1, 9, label = 2);
+    T_2.add_edge(11, 1, label = 3);
+    T_2.add_edge(7, 1, label = 2);
+    code_T2 = [(2,1),(6,3),(5,4),(10,3),(1,2),(10,3),(6,4),(9,2),(1,3),(8,1),(3,3),(0,-1)];
+
 
     def test_dandelion_constructs_good_code(self):
         assert isinstance(Dandelion(11, 3, self.good_code), Dandelion);
@@ -143,3 +161,12 @@ class TestDandelion():
         DCode = Dandelion(11, 3);
         code = DCode._generalizedCode(self.T, 0, 1);
         assert code == self.good_code;
+
+        DCode2 = Dandelion(18, 4);
+        code = DCode2._generalizedCode(self.T_2, 0, 1);
+        assert code == self.code_T2;
+
+    def test_codeKTree(self):
+        DCode = Dandelion(11, 3, kTree = self.kTree);
+        DCode.codeKTree();
+        assert DCode.code == self.good_code and DCode.Q == self.Q;
