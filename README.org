@@ -10,8 +10,6 @@
 #+SELECT_TAGS: export
 #+CREATOR: Emacs 24.5.1 (Org mode 9.0.3)
 #+EXCLUDE_TAGS: noexport
-#+PROPERTY: header-args:python :session *Python*
-#+PROPERTY: header-args :results output
 
 This package presents a method for coding and decoding k-Trees from strings
 called Generalized Dandelion Codes. It is an implementation of the algorithm
@@ -20,22 +18,22 @@ k-Trees]].
 
 This documentation assumes familiarity with the mentioned paper.
 
-For the examples here we'll be considering a kTree of $$N = 11$$ variables and $$k = 3$$.
-#+BEGIN_SRC python
-  import numpy as np
+For the examples here we'll be considering a kTree of ~N = 11~ variables and ~k = 3~.
+#+BEGIN_SRC python :results ouput
   import networkx as nx
-
   from dandelion.main import Dandelion
   
   N = 11; #Number of variables
   k = 3; #Width of the graph
 #+END_SRC
 
+#+RESULTS:
+
 * Code and kTree Structures
   The kTree is represented using [[https://networkx.github.io/][NetworkX's]] Graph class.
-#+BEGIN_SRC python
+#+BEGIN_SRC python :results ouput
   kTree = nx.Graph();
-  kTree.add_nodes_from([i for i in np.arange(N)]);
+  kTree.add_nodes_from(range(N+1)[1:]);
   kTree.add_edges_from([(1,2),(1,8),(1,5),(1,7),
                         (2,5),(2,6),(2,8),(2,3),(2,11),(2,9),(2,10),
                         (3,8),(3,5),(3,9),(3,4),(3,10),(3,11),
@@ -51,8 +49,8 @@ For the examples here we'll be considering a kTree of $$N = 11$$ variables and $
 
 The Dandelion code is an Array of Tuples. The i-th Tuple has the information
 about the parent of the i-th node and it's edge's label on the characteristic
-tree. The \epsilon edge label in represented as the value $$-1$$.
-#+BEGIN_SRC python
+tree. The \epsilon edge label in represented as the value -1.
+#+BEGIN_SRC python :results ouput
   validCode = [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)]; #OK
   invalidCode = [(0, -1), (0, 2), 4, [1, 3]] #NOK, has an int and an array instead of Tuples in its elements
 #+END_SRC
@@ -60,14 +58,14 @@ tree. The \epsilon edge label in represented as the value $$-1$$.
 #+RESULTS:
 
 To code or decode a k-Tree an instance of the Dandelion class must be created.
-When instantiating the class the number of variables $$N$$ and the width of the
-$$k$$ tree must be provided.
+When instantiating the class the number of variables ~N~ and the width of the
+~k~ tree must be provided.
 
 In case of coding a kTree must be provided. Either at construction time or later
 by setting the "kTree" attribute to a valid kTree. It validates if the kTree
 provided is an instance of networkx's Graph class.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python :results ouput
   dandelionCode = Dandelion(N, k, kTree=kTree); #OK. It is a well formed tree
   try:
       dandelionCode = Dandelion(N, k, kTree=[1, 20, 300]); #NOK. The kTree provided is not an instance of nx.Graph
@@ -83,7 +81,7 @@ In case of decoding a code must also be provided at construction time or later
 by setting the "code" attribute to a valid code. If a wrong code (bad forming or
 wrong length according to N or k) is provided, an Exception is raised.
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python :results ouput
   dandelionCode = Dandelion(11, 3, code=validCode); #OK, code provided at construction
   dandelionCode = Dandelion(11, 3); #OK, empty structure
   try:
@@ -97,18 +95,77 @@ wrong length according to N or k) is provided, an Exception is raised.
 : >>> ... ... ... ... Error
 
 * Coding and Decoding
-** Decoding a k-Tree
-
 ** Coding a k-Tree
+To obtain the dandelion code that correponds to a KTree you have to construct a
+~Dandelion~ object and specify ~N~, ~k~ and a valid kTree. After that just call
+the ~codeKTree~ method. This method returns the root ~Q~ and the code for that
+kTree.
+
+Here is an example:
+#+BEGIN_SRC python :results ouput :session
+import networkx as nx
+import numpy as np
+from dandelion.main import Dandelion
+  
+N = 11;
+k = 3;
+
+#The kTree below is the same as the one specified in the Fig1 of the paper.
+kTree = nx.Graph();
+kTree.add_nodes_from(range(N+1)[1:]);
+kTree.add_edges_from([(1,2),(1,8),(1,5),(1,7),
+                        (2,5),(2,6),(2,8),(2,3),(2,11),(2,9),(2,10),
+                        (3,8),(3,5),(3,9),(3,4),(3,10),(3,11),
+                        (4,9),(4,11),
+                        (5,7),(5,8),
+                        (6,9),(6,8),
+                        (7,8),
+                        (8,9),
+                        (9,10),(9,11)])
+DCode = Dandelion(N, k, kTree = kTree);
+Q, code = DCode.codeKTree();
+
+print(Q, code);
+#+END_SRC
+
+#+RESULTS:
+: 
+: >>> >>> ... >>> >>> >>> ... >>> >>> ... ... ... ... ... ... ... ... >>> >>> >>> >>> [2, 3, 9] [(0, -1), (2, 1), (8, 3), (8, 2), (1, 3), (5, 3)]
+
+~Q~ and ~code~ can also be accessed as properties of the object. As in ~DCode.Q~
+and ~DCode.code~. This function also save the internal structures, namely the
+Characteristic Tree ~T~ and the Renyi KTree ~Rk~ (it does not have the Skeleton
+Tree as this is not generated by the algorithm to keep the complexity linear).
+
+The figure below shows the graph of the original KTree, its Renyi KTree,
+Characteristic Tree and the generated Code.
+
+#+BEGIN_SRC python :results value file replace
+  import matplotlib
+  matplotlib.use('Agg');
+  import matplotlib.pyplot as plt
+
+  fig, axes = plt.subplots(nrows=1, ncols=3, subplot_kw={'xticks': [], 'yticks': []});
+ 
+  nx.draw_networkx(DCode.kTree, ax=axes[0]);
+  nx.draw_networkx(DCode.Rk, ax=axes[1]);
+  nx.draw_networkx(DCode.T, ax=axes[2]);
+
+  plt.savefig('graph.png');
+  'graph.png'
+#+END_SRC
+
+#+RESULTS:
+[[file:graph.png]]
+
+** Decoding a k-Tree 
 
 * Todo
-** TODO Create the Code Method
+** DONE Create the Code Method
+   CLOSED: [2017-05-02 ter 23:38]
 ** TODO Create the Decode Method
-** TODO [#C] Change code from list no np.Array 
-** TODO Tests [1/1] 
-*** DONE Validation [4/4]
-    CLOSED: [2017-03-16 qui 00:03]
-    - [X] Good code
-    - [X] Bad code: wrong format
-    - [X] Bad code: wrong length
-    - [X] kTrees
+
+* Version History
+| Version | Changes                            |
+|     0.1 | Basic structure                    |
+|     0.2 | Coding functions and documentation |
